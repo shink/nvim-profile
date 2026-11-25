@@ -1,0 +1,8 @@
+# 日志
+nvim.log
+
+# macOS
+.DS_Store
+
+# 编译产物（由 submodule 内的构建脚本生成）
+pack/vendor/start/telescope-fzf-native.nvim/build/
