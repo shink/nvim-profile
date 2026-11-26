@@ -1,77 +1,100 @@
 # nvim-profile
 
-Neovim 配置，采用 **原生 `pack/vendor/start` 包管理** + **git submodule** 管理插件。
+Neovim 配置：原生 `pack/vendor/start` 包管理 + git submodule，核心配置拆在 `lua/core/`，插件位于 `pack/vendor/start/`。
 
-## 目录结构
-
-```
-.
-├── init.lua                  # 入口：leader、加载各模块
-├── lua/core/                 # 核心配置（按功能拆分）
-│   ├── options.lua           # 基础选项
-│   ├── keymaps.lua           # 按键映射
-│   ├── themkkke.lua          # 主题（github_dark_default）
-│   ├── lsp.lua               # LSP（nvim-lspconfig）
-│   ├── cmp.lua               # 补全（nvim-cmp + LuaSnip）
-│   ├── treesitter.lua        # 语法高亮（nvim-treesitter）
-│   ├── telescope.lua         # 模糊查找（telescope.nvim）
-│   ├── tree.lua              # 文件树（nvim-tree.lua）
-│   └── flash.lua             # 快速跳转（flash.nvim）
-└── pack/vendor/start/        # 插件（git submodule）
-    ├── nvim-cmp  cmp-*  cmp_luasnip  LuaSnip
-    ├── nvim-lspconfig  nvim-treesitter  telescope.nvim
-    ├── plenary.nvim  telescope-fzf-native.nvim
-    ├── nvim-tree.lua  nvim-web-devicons  flash.nvim
-    ├── github-nvim-theme
-    └── vim-commentary  vim-surround  vim-highlightedyank
-```
-
-## 首次安装
+## 快速安装
 
 ```bash
-git clone --recursive https://github.com/shink/nvim-profile.git ~/.config/nvim
+# 1. 准备：Neovim ≥ 0.11、git、gcc/make、curl/tar、node/npm
+#    （可选）clangd、pyright、rg/fd、xclip
 
-# 单独拉取 submodule
-# git -C ~/.config/nvim submodule update --init --recursive
-```
+# 2. 克隆并拉取插件（也可直接 clone 到 ~/.config/nvim）
+git clone https://github.com/shink/nvim-profile.git ~/workspace/nvim-profile
+cd ~/workspace/nvim-profile
+git submodule update --init --recursive   # 失败重跑；若只剩 .git 空目录加 --force
 
-> 提示：如果不想把仓库直接放在 `~/.config/nvim`，可以放在别处再用软链：
-> ```bash
-> ln -s /Users/shenke/workspace/nvim-profile ~/.config/nvim
-> ```
+# 3. 软链到 ~/.config/nvim（已存在则先改名）
+ln -s ~/workspace/nvim-profile ~/.config/nvim
 
-## 插件管理（git submodule）
+# 4. 装 tree-sitter CLI ≥ 0.22（关键）
+npm install -g tree-sitter-cli
+tree-sitter --version
 
-所有插件位于 `pack/vendor/start/`，以 submodule 形式固定到某个 commit。
-
-```bash
-# 查看所有插件及其版本
-git submodule status
-
-# 更新所有插件到各自远程最新提交
-git submodule update --remote
-
-# 更新单个插件
-git -C pack/vendor/start/nvim-cmp pull
-git add pack/vendor/start/nvim-cmp
-git commit -m "chore: update nvim-cmp"
-```
-
-新增插件：
-
-```bash
-git submodule add <repo-url> pack/vendor/start/<name>
-git commit -m "feat: add <name>"
-```
-
-## 额外构建步骤
-
-`telescope-fzf-native.nvim` 是 C 扩展，克隆后需编译一次：
-
-```bash
+# 5. 编译 fzf-native
 make -C ~/.config/nvim/pack/vendor/start/telescope-fzf-native.nvim
+
+# 6. LSP 服务端（按语言按需）
+sudo apt install clangd    # C/C++
+npm install -g pyright     # Python
+
+# 7. 首次启动自动装 treesitter parser（需联网，停留几十秒让 parser 装完）
+nvim
 ```
 
-Treesitter 的 parser 会在首次启动时按 `lua/core/treesitter.lua` 里的列表
-（c / cpp / lua / vim / vimdoc / python / query）自动安装。
+### 依赖要点
 
+| 依赖 | 用途 |
+|---|---|
+| Neovim ≥ 0.11 | `vim.lsp.config` / `vim.lsp.enable` |
+| gcc + make | 编译 fzf-native、treesitter parser |
+| curl + tar | treesitter 下载/解压 |
+| node + npm | tree-sitter CLI、pyright |
+| **tree-sitter-cli ≥ 0.22** | `tree-sitter build`（Ubuntu 自带的 0.20.8 无 `build` 子命令，会报 `build wasn't recognized`） |
+| clangd / pyright | C/C++ / Python LSP |
+| rg / fd（可选） | telescope 提速 |
+| xclip / xsel（可选） | 系统剪贴板 `"+` 寄存器 |
+
+### 验证
+
+```bash
+nvim --headless \
+  "+lua vim.defer_fn(function() \
+      print('colorscheme=' .. (vim.g.colors_name or 'NIL')); \
+      print('parsers=' .. table.concat(require('nvim-treesitter').get_installed('parsers'), ',')); \
+      print('fzf_ok=' .. tostring(pcall(require('telescope').load_extension, 'fzf'))) \
+    end, 500)" \
+  "+lua vim.defer_fn(function() vim.cmd('qa!') end, 2000)"
+```
+
+预期：`colorscheme=github_dark_default`，`parsers=` 非空，`fzf_ok=true`。
+
+## 插件管理
+
+```bash
+git submodule status                                # 查看版本
+git submodule update --remote                       # 全部更新到各自最新
+git -C pack/vendor/start/<name> pull                # 更新单个
+git submodule add <repo-url> pack/vendor/start/<name>   # 新增
+```
+
+## 使用
+
+leader 键为**空格**。
+
+| 按键 | 功能 |
+|---|---|
+| `<leader>ff` / `<leader>fg` | 查找文件 / live grep |
+| `<leader>fb` / `<leader>fr` | 缓冲区列表 / 最近文件 |
+| `<leader>fh` / `<leader>fs` | 帮助 / 搜索光标下的词 |
+| `<leader>fc` / `<leader>ft` | git 文件 / 按符号浏览代码结构 |
+| `<leader>e` | 开关文件树 |
+| `s` / `S` | flash 跳转 / treesitter 节点跳转 |
+| `yr` / `dr` / `vr` | flash 远程操作（配合 y/d/v） |
+| `<leader>y` / `<leader>d` / `<leader>p` | 剪贴板 复制 / 剪切 / 粘贴 |
+| `<leader>j` | 合并行（原始 `J`） |
+| `J` / `K` | 下移 / 上移 5 行 |
+| `H` / `L` | 行首 / 行尾 |
+| `j` / `k` | 屏幕行移动（绕过软换行） |
+| `fw` | 搜索光标下的词（等同 `*`） |
+| `<leader><space>` | 清除搜索高亮 |
+
+补全（nvim-cmp）：`Tab`/`S-Tab` 选候选或跳片段占位符，`<CR>` 确认，`<C-Space>` 手动触发。
+
+LSP：打开 `.c/.cpp` 自动启用 clangd，`.py` 启用 pyright；`gd`/`gr`/`gi`/`gt` 走 telescope 悬浮选择器（单个直接跳，多个弹浮动预览），`gD`/`<leader>rn`/`K` 走内置 LSP。
+
+## 常见问题
+
+- **`build wasn't recognized`**：tree-sitter CLI 太旧 → `npm install -g tree-sitter-cli`。
+- **`module 'xxx' not found`**：submodule 没拉全 → `git submodule update --init --force --recursive`。
+- **telescope 找不到 fzf**：没编译 fzf-native → `make -C pack/vendor/start/telescope-fzf-native.nvim`。
+- **Python 补全/跳转无效**：没装 pyright → `npm install -g pyright`。

@@ -11,3 +11,9 @@ vim.keymap.set('n', '<leader>fs', builtin.grep_string,  { desc = '搜索光标�
 vim.keymap.set('n', '<leader>fc', builtin.git_files,    { desc = 'git 文件（需 git 仓库）' })
 vim.keymap.set('n', '<leader>ft', builtin.treesitter,   { desc = '按符号浏览代码结构' })
 
+-- ===== LSP 符号跳转 =====
+vim.keymap.set('n', 'gd', builtin.lsp_definitions,      { desc = '跳转定义' })
+vim.keymap.set('n', 'gr', builtin.lsp_references,       { desc = '查找引用' })
+vim.keymap.set('n', 'gi', builtin.lsp_implementations,  { desc = '跳转实现' })
+vim.keymap.set('n', 'gt', builtin.lsp_type_definitions, { desc = '跳转类型定义' })
+

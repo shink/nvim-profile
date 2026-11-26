@@ -33,6 +33,9 @@ map("n", "<leader>j", "J")   -- leader+j 合并行（原始 J）
 map("n", "J", "5j")
 map("n", "K", "5k")
 
+-- ===== 其他=====
+map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "重命名" })
+
 -- ===== easymotion =====
 -- map("n", "<leader>s", "<leader><leader>s")
 -- map("n", "<leader>w", "<leader><leader>w")
