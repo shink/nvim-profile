@@ -55,3 +55,6 @@
 [submodule "pack/vendor/start/plenary.nvim"]
 	path = pack/vendor/start/plenary.nvim
 	url = https://github.com/nvim-lua/plenary.nvim.git
+[submodule "pack/vendor/start/bookmarks.nvim"]
+	path = pack/vendor/start/bookmarks.nvim
+	url = https://github.com/tomasky/bookmarks.nvim.git

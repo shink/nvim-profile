@@ -18,4 +18,5 @@ require("core.treesitter")
 require("core.telescope")
 require("core.tree")
 require("core.flash")
+require("core.bookmarks")
 

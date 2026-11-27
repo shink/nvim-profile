@@ -81,7 +81,9 @@ leader 键为**空格**。
 | `s` / `S` | flash 跳转 / treesitter 节点跳转 |
 | `yr` / `dr` / `vr` | flash 远程操作（配合 y/d/v） |
 | `<leader>y` / `<leader>d` / `<leader>p` | 剪贴板 复制 / 剪切 / 粘贴 |
-| `<leader>j` | 合并行（原始 `J`） |
+| `<leader>j` / `<leader>k` | 上一个文件 / 下一个文件 |
+| `<leader>h` / `<leader>l` | 上一个书签 / 下一个书签（跨文件） |
+| `<leader>m` / `<leader>M` | 切换书签 / 书签列表 |
 | `J` / `K` | 下移 / 上移 5 行 |
 | `H` / `L` | 行首 / 行尾 |
 | `j` / `k` | 屏幕行移动（绕过软换行） |
