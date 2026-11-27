@@ -23,15 +23,19 @@ map({ "n", "v" }, "<leader>p", '"+p')
 map({ "n", "v" }, "H", "^")
 map({ "n", "v" }, "L", "$")
 
+-- ===== 文件切换（buffer） =====
+map("n", "<leader>h", ":bp<CR>", { desc = "上一个文件" })
+map("n", "<leader>l", ":bn<CR>", { desc = "下一个文件" })
+
 -- ===== j / k 屏幕行 =====
 map({ "n", "v" }, "j", "gj")
 map({ "n", "v" }, "k", "gk")
 
 -- ===== 其他普通模式映射 =====
 map("n", "fw", "*")
-map("n", "<leader>j", "J")   -- leader+j 合并行（原始 J）
-map("n", "J", "5j")
-map("n", "K", "5k")
+map("n", "<leader>j", "J", { noremap = true })    -- leader+j 合并行（原始 J）
+map("n", "J", "5j", { noremap = true })           -- J 向下 5 个物理行
+map("n", "K", "5k", { noremap = true })           -- K 向上 5 个物理行
 
 -- ===== 其他=====
 map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "重命名" })

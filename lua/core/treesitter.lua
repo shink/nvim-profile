@@ -24,5 +24,5 @@ vim.api.nvim_create_autocmd('FileType', {
 -- 基于语法树的代码折叠（Neovim 内置；无 parser 的文件 foldexpr 返回 -1，不折叠）
 vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-vim.opt.foldenable = false  -- 默认展开，避免打开文件就被折叠
+vim.opt.foldlevelstart = 99
 
